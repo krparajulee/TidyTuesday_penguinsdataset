@@ -1,0 +1,63 @@
+library(extrafont)
+extrafont::loadfonts(device="win")
+library(tidytuesdayR)
+tuesdata <- tidytuesdayR::tt_load(2020, week = 31)
+penguins <- tuesdata$penguins
+library(tidyverse)
+library(ggtext)
+library(patchwork)
+
+penguins$species <- as.factor(penguins$species)
+penguins$island <- as.factor(penguins$island)
+penguins$sex <- as.factor(penguins$sex)
+
+
+levels(penguins$sex) <- c("Female","Male")
+levels(penguins$island) <- c("Biscoe Island","Dream Island","Torgersen Island")
+
+
+p <- penguins %>% filter(!is.na(sex)) %>% ggplot(aes(bill_length_mm,bill_depth_mm))+ 
+  geom_point(aes(color=species), size=2)+
+  facet_grid(sex~island)+theme_minimal(base_family = "Comfortaa", base_size = 14)+
+  labs(x="Bill length,mm", y= "Bill depth,mm", 
+       title= "Overall Analysis of Penguins",
+       subtitle="Gentoo are the most peculiar : rare, larger and bigger.\nAdelie are available everywhere")+ 
+  theme( panel.grid= element_blank(),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),text= element_text(color="black"))+
+  theme(plot.background=element_rect(fill="white"),panel.background=element_rect(fill="grey"))+
+  theme(axis.ticks.x= element_blank(), axis.ticks.y= element_blank(), 
+        axis.title.x =element_text(size=11), axis.title.y= element_text(size=11),
+        axis.text.x=element_text(size=8), axis.text.y= element_text(size=8))+
+  theme(strip.background = element_rect(colour="white", fill="white", 
+                                        size=1.5, linetype="solid"))+
+  theme(strip.text.x = element_text(size=12, color="#CC6666",
+                                    face="bold.italic"),
+        strip.text.y = element_text(size=12, color="#CC6666",
+                                    face="bold.italic"))+
+  theme( plot.title = element_text(size = 18,color = "darkblue"),
+         plot.subtitle = element_text(size = 12, face="italic",color = "brown"))+
+  theme(legend.position = "none")
+
+q<- penguins %>% filter(!is.na(sex)) %>%ggplot(aes(flipper_length_mm/10,body_mass_g/1000))+ 
+  geom_point(aes(color=species), size=2)+
+  facet_grid(sex~island)+theme_minimal(base_family = "Comfortaa", base_size = 14)+
+  labs(x="Flipper length,cm", y= "Weight,kg",caption="Graphic:Kundan\nData: Gorman,Williams and Fraser,2014")+
+  theme(  panel.grid= element_blank(),
+         panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),text= element_text(color="black"))+
+  theme(plot.background=element_rect(fill="white"),panel.background=element_rect(fill="grey"))+
+  theme(axis.ticks.x= element_blank(), axis.ticks.y= element_blank(),, 
+        axis.title.x =element_text(size=11), axis.title.y= element_text(size=11),
+        axis.text.x=element_text(size=8), axis.text.y= element_text(size=8))+
+  theme(strip.background = element_rect(colour="white", fill="white", 
+                                        size=1.5, linetype="solid"))+
+  theme(strip.text.x = element_blank(),
+        strip.text.y = element_text(size=12, color="#CC6666",
+                                    face="bold.italic"))+
+  theme(  plot.caption = element_text(size=8,color="blue", face="italic"))+
+  theme(legend.position="bottom")+
+  theme(legend.text = element_text(face="bold",color = "black",size=10),
+        legend.background = element_rect(fill = "white", color="white"),
+        legend.title = element_blank())
+p/q
